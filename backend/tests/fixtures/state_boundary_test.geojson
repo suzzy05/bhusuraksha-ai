@@ -1,0 +1,21 @@
+{
+  "type": "FeatureCollection",
+  "features": [
+    {
+      "type": "Feature",
+      "properties": { "name": "TEST West Bengal Region" },
+      "geometry": {
+        "type": "Polygon",
+        "coordinates": [[[85, 25], [90, 25], [90, 30], [85, 30], [85, 25]]]
+      }
+    },
+    {
+      "type": "Feature",
+      "properties": { "name": "TEST Assam Region" },
+      "geometry": {
+        "type": "Polygon",
+        "coordinates": [[[90, 24], [94, 24], [94, 28], [90, 28], [90, 24]]]
+      }
+    }
+  ]
+}

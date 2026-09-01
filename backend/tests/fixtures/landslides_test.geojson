@@ -1,0 +1,25 @@
+{
+  "type": "FeatureCollection",
+  "features": [
+    {
+      "type": "Feature",
+      "geometry": { "type": "Point", "coordinates": [88.2636, 27.041] },
+      "properties": { "record_id": "GJ001", "date": "2023-08-01", "severity": "HIGH", "event_type": "debris_flow" }
+    },
+    {
+      "type": "Feature",
+      "geometry": { "type": "Point", "coordinates": [91.8933, 25.5788] },
+      "properties": {}
+    },
+    {
+      "type": "Feature",
+      "geometry": null,
+      "properties": { "record_id": "GJ003", "date": "2023-08-05" }
+    },
+    {
+      "type": "Feature",
+      "geometry": { "type": "Point", "coordinates": [] },
+      "properties": { "record_id": "GJ004" }
+    }
+  ]
+}

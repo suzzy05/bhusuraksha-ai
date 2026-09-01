@@ -1,0 +1,12 @@
+# Optional dependencies — NOT installed by default (see
+# backend/docs/REAL_DATA_INGESTION.md and docs/TERRAIN_LANDCOVER.md for
+# why). Install only the ones you actually need:
+#
+#   pip install -r requirements-optional.txt
+#
+# rasterio: real DEM/GeoTIFF raster reading (Phase 12 terrain features,
+# Phase 13 land cover). Ships a prebuilt wheel with bundled GDAL on
+# Windows/Linux/macOS — no separate GDAL install needed. Without it,
+# terrain/land-cover features honestly report unavailable rather than
+# estimating a value.
+rasterio==1.5.1

@@ -1,0 +1,75 @@
+@import "tailwindcss";
+
+/* Class-based dark mode: `dark:` utilities apply based on an ancestor
+   `.dark` class (toggled by hooks/useTheme.js), not just OS preference —
+   lets the user override the system setting. */
+@custom-variant dark (&:where(.dark, .dark *));
+
+/* Design system tokens — a restrained, professional palette. Risk-level
+   colors (LOW/MODERATE/HIGH/CRITICAL) live separately in utils/riskUtils.js
+   and are used ONLY to encode risk meaning, never as decoration. These
+   tokens are the neutral chrome + a small set of operational-status colors. */
+@theme {
+  --color-surface: #f7f8fa;
+  --color-ink: #0f172a;
+  --color-muted: #64748b;
+  --color-line: #e2e8f0;
+  --color-brand: #2563eb;
+  --color-brand-dark: #1d4ed8;
+  --color-success: #16a34a;
+  --color-warning: #f59e0b;
+  --color-danger: #dc2626;
+}
+
+:root {
+  color-scheme: light;
+}
+
+:root.dark {
+  color-scheme: dark;
+  --color-surface: #0b1120;
+  --color-ink: #f1f5f9;
+  --color-muted: #94a3b8;
+  --color-line: #1e293b;
+}
+
+html,
+body,
+#root {
+  height: 100%;
+}
+
+body {
+  margin: 0;
+  font-family:
+    ui-sans-serif, system-ui, -apple-system, "Segoe UI", Roboto, sans-serif;
+  background-color: var(--color-surface);
+  color: var(--color-ink);
+}
+
+/* Focus visibility for keyboard navigation — never suppressed. */
+:focus-visible {
+  outline: 2px solid var(--color-brand);
+  outline-offset: 2px;
+}
+
+/* Leaflet's own stylesheet hardcodes a white popup background — this is
+   the one place dark mode needs plain CSS instead of a Tailwind `dark:`
+   utility, since ZonePopup/EventDetailModal content renders inside a
+   Leaflet-controlled wrapper element, not one we author ourselves. */
+.dark .leaflet-popup-content-wrapper,
+.dark .leaflet-popup-tip {
+  background-color: #0f172a;
+  color: #e2e8f0;
+}
+
+.dark .leaflet-container a.leaflet-popup-close-button {
+  color: #94a3b8;
+}
+
+/* Darkens the OpenStreetMap raster tiles themselves via a CSS filter — no
+   separate dark tile provider needed. Scoped to the tile pane only, so
+   markers/popups (a different Leaflet pane) are never inverted. */
+.dark .leaflet-tile-pane {
+  filter: invert(1) hue-rotate(180deg) brightness(0.92) contrast(0.9) saturate(0.85);
+}

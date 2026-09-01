@@ -1,0 +1,100 @@
+services:
+  db:
+    image: postgis/postgis:16-3.4
+    container_name: bhusuraksha_db
+    restart: unless-stopped
+    environment:
+      POSTGRES_DB: ${POSTGRES_DB:-bhusuraksha}
+      POSTGRES_USER: ${POSTGRES_USER:-bhusuraksha}
+      POSTGRES_PASSWORD: ${POSTGRES_PASSWORD:?Set POSTGRES_PASSWORD in your .env file}
+    volumes:
+      - bhusuraksha_pgdata:/var/lib/postgresql/data
+    ports:
+      # Exposed for local Docker development convenience (e.g. psql from
+      # the host) on 5433 to avoid colliding with a native PostgreSQL
+      # install that may already be using 5432 on the host. Backend <->
+      # db traffic uses the internal Docker network on 5432 regardless —
+      # this mapping only affects host-side tools. Do not expose this
+      # port in a production configuration.
+      - "5433:5432"
+    healthcheck:
+      test: ["CMD-SHELL", "pg_isready -U ${POSTGRES_USER:-bhusuraksha} -d ${POSTGRES_DB:-bhusuraksha}"]
+      interval: 5s
+      timeout: 5s
+      retries: 10
+      start_period: 10s
+    networks:
+      - bhusuraksha_net
+
+  backend:
+    build:
+      context: ./backend
+    container_name: bhusuraksha_backend
+    restart: unless-stopped
+    environment:
+      DATABASE_URL: postgresql+psycopg://${POSTGRES_USER:-bhusuraksha}:${POSTGRES_PASSWORD}@db:5432/${POSTGRES_DB:-bhusuraksha}
+      WEATHER_PROVIDER: ${WEATHER_PROVIDER:-open-meteo}
+      CORS_ALLOWED_ORIGINS: ${CORS_ALLOWED_ORIGINS:-http://localhost:5173,http://127.0.0.1:5173,http://localhost:8080,http://127.0.0.1:8080}
+      LOG_LEVEL: ${LOG_LEVEL:-INFO}
+    depends_on:
+      db:
+        condition: service_healthy
+    ports:
+      - "8000:8000"
+    volumes:
+      # Real datasets are never baked into the image (see backend/Dockerfile)
+      # — mount your host's data/raw/external so a file placed there is
+      # visible to the container without a rebuild. Ingest it the same way
+      # as local dev: `docker compose exec backend python
+      # scripts/ingest_dataset.py --category historical_landslide --path
+      # data/raw/external/<your file> --name "..."`. Works fully without
+      # this mount too — the app starts fine with zero real datasets.
+      - ./backend/data/raw/external:/app/data/raw/external
+    networks:
+      - bhusuraksha_net
+
+  # Optional Phase 16 scheduler — NOT started by a plain `docker compose
+  # up`. Enable it explicitly with `docker compose --profile worker up -d`.
+  # Calls the backend's own POST /weather/refresh-all on an interval; it
+  # is a separate long-lived process, never a loop inside the FastAPI
+  # request-handling process itself.
+  worker:
+    build:
+      context: ./backend
+    container_name: bhusuraksha_worker
+    restart: unless-stopped
+    profiles: ["worker"]
+    entrypoint: []
+    command: ["python", "scripts/run_scheduled_risk_update.py", "--api-base-url", "http://backend:8000", "--interval-seconds", "${RISK_UPDATE_INTERVAL_SECONDS:-1800}"]
+    environment:
+      LOG_LEVEL: ${LOG_LEVEL:-INFO}
+    depends_on:
+      backend:
+        condition: service_healthy
+    networks:
+      - bhusuraksha_net
+
+  frontend:
+    build:
+      context: ./frontend
+      args:
+        # Same-origin path — nginx.conf proxies /api/* to the backend
+        # service. Browser JS cannot resolve the "backend" Docker DNS
+        # name directly, so this avoids baking a container-internal
+        # hostname into the built JS bundle.
+        VITE_API_BASE_URL: /api
+    container_name: bhusuraksha_frontend
+    restart: unless-stopped
+    depends_on:
+      - backend
+    ports:
+      - "8080:80"
+    networks:
+      - bhusuraksha_net
+
+networks:
+  bhusuraksha_net:
+    driver: bridge
+
+volumes:
+  bhusuraksha_pgdata:

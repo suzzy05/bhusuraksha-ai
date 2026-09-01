@@ -1,0 +1,6 @@
+record_id,Latitude,lng,Date,severity,event_type
+EV001,27.041,88.2636,2023-07-12,HIGH,debris_flow
+EV002,25.5788,91.8933,,MODERATE,rock_fall
+EV003,999,88.4756,2023-06-20,LOW,slide
+EV001,27.041,88.2636,2023-07-12,HIGH,debris_flow
+EV004,23.7271,92.7176,2023-09-01,,

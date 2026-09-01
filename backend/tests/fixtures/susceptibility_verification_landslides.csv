@@ -1,0 +1,6 @@
+record_id,latitude,longitude,date,severity,event_type
+SV001,27.050945,88.250405,2020-01-05,small,slide
+SV002,27.050945,88.250675,2020-03-10,medium,slide
+SV003,27.050945,88.250945,2020-06-15,small,debris_flow
+SV004,27.050675,88.250405,2020-09-20,large,slide
+SV005,27.050675,88.250675,2020-12-25,medium,slide

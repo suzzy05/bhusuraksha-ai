@@ -1,0 +1,30 @@
+__pycache__/
+*.pyc
+venv/
+.venv/
+*.db
+.env
+
+# Claude Code local session state — not meant to be shared/committed
+.claude/settings.local.json
+.claude/scheduled_tasks.lock
+
+# ML artifacts are trained/regenerated locally, not committed
+backend/ml/artifacts/*.joblib
+backend/ml/artifacts/*.json
+!backend/ml/artifacts/.gitkeep
+backend/ml/susceptibility/artifacts/*.joblib
+backend/ml/susceptibility/artifacts/*.json
+!backend/ml/susceptibility/artifacts/.gitkeep
+backend/data/processed/*
+!backend/data/processed/.gitkeep
+
+# Real external datasets are user-supplied locally, not committed
+# (may be large and/or license-restricted — see backend/docs/DATA_SOURCES.md)
+backend/data/raw/external/*
+!backend/data/raw/external/.gitkeep
+
+# Staging area for in-transit downloads (see backend/data/staging/README.md)
+backend/data/staging/*
+!backend/data/staging/.gitkeep
+!backend/data/staging/README.md
