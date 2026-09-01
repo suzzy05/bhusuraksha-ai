@@ -9,3 +9,10 @@ requests==2.32.3
 psycopg[binary]==3.2.3
 geoalchemy2==0.15.2
 alembic==1.13.3
+
+# rasterio is optional-by-design for a lightweight base install (see
+# requirements-optional.txt) — moved into the base requirements here
+# because this deployment path (a PaaS host with no docker-compose bind
+# mount to layer it in separately) needs it for real terrain/land-cover
+# features and the Phase 22 susceptibility model to actually work.
+rasterio==1.5.1

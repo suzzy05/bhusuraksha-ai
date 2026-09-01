@@ -7,5 +7,14 @@ __pycache__/
 .git/
 .pytest_cache/
 
+# Real datasets are NEVER baked into the image — they're mounted live at
+# runtime via docker-compose.yml's bind mount
+# (./backend/data/raw/external:/app/data/raw/external). Without this
+# exclusion, the build context was pulling in 2GB+ of real DEM/rainfall/
+# land-cover files on every single build (found while deploying: this was
+# large enough to make the Docker daemon RPC connection die mid-transfer).
+data/raw/external/*
+!data/raw/external/.gitkeep
+
 # NOT excluded (needed at runtime / build): ml/artifacts/, data/raw/demo/,
 # requirements.txt, alembic/

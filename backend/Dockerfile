@@ -9,8 +9,13 @@ RUN apt-get update \
     && apt-get install -y --no-install-recommends libpq5 curl \
     && rm -rf /var/lib/apt/lists/*
 
-COPY requirements.txt .
+COPY requirements.txt requirements-optional.txt ./
 RUN pip install --no-cache-dir -r requirements.txt
+# rasterio (real DEM/land-cover raster reading, Phase 12/13) is optional
+# by design for a lightweight base image — but this deployment actually
+# uses real terrain data and the Phase 22 susceptibility model, both of
+# which need it, so it's installed here rather than left out.
+RUN pip install --no-cache-dir -r requirements-optional.txt
 
 # ML model artifacts and demo data ARE needed at runtime — .dockerignore
 # only excludes venv/caches/local DB files, not these.

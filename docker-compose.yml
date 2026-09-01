@@ -36,6 +36,15 @@ services:
       WEATHER_PROVIDER: ${WEATHER_PROVIDER:-open-meteo}
       CORS_ALLOWED_ORIGINS: ${CORS_ALLOWED_ORIGINS:-http://localhost:5173,http://127.0.0.1:5173,http://localhost:8080,http://127.0.0.1:8080}
       LOG_LEVEL: ${LOG_LEVEL:-INFO}
+      # Real Phase 22 pilot data (Uttarakhand + Himachal Pradesh) — the
+      # actual files live on the host at backend/data/raw/external/ and
+      # are visible here via the bind mount below at the matching
+      # container-side path.
+      BHUSURAKSHA_DEM_DATA_PATH: /app/data/raw/external/pilot_dem.tif
+      BHUSURAKSHA_DEM_PATH: /app/data/raw/external/pilot_dem.tif
+      BHUSURAKSHA_LANDCOVER_PATH: /app/data/raw/external/pilot_landcover.tif
+      BHUSURAKSHA_LANDCOVER_SCHEME: esa_worldcover
+      BHUSURAKSHA_STATE_BOUNDARY_PATH: /app/data/raw/external/india_states_natural_earth.geojson
     depends_on:
       db:
         condition: service_healthy
