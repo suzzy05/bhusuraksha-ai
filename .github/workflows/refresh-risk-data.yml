@@ -1,0 +1,28 @@
+name: Refresh risk data
+
+# Calls the backend's own POST /weather/refresh-all on a schedule, since
+# nothing else does: the free Render plan doesn't support a Background
+# Worker service (see backend/scripts/run_scheduled_risk_update.py, which
+# does the same thing but needs a paid always-on process to host it).
+# Requires a repo variable BACKEND_URL (Settings > Secrets and variables >
+# Actions > Variables), e.g. https://bhusuraksha-backend.onrender.com
+
+on:
+  schedule:
+    - cron: "0 */5 * * *"
+  workflow_dispatch: {}
+
+jobs:
+  refresh:
+    runs-on: ubuntu-latest
+    steps:
+      - name: POST /weather/refresh-all
+        run: |
+          if [ -z "${{ vars.BACKEND_URL }}" ]; then
+            echo "::error::Set the BACKEND_URL repo variable to your deployed backend's base URL."
+            exit 1
+          fi
+          curl -sf -X POST "${{ vars.BACKEND_URL }}/weather/refresh-all" \
+            --max-time 590 \
+            -o response.json
+          cat response.json
