@@ -15,6 +15,17 @@ DATABASE_URL = os.getenv("DATABASE_URL", DEFAULT_DATABASE_URL)
 # DATABASE_URL to a `postgresql+psycopg://` URL (see .env.example and
 # docker-compose.yml) to use PostgreSQL + PostGIS instead — no code change
 # needed, only configuration.
+#
+# Some managed-Postgres hosts (Render, Railway's raw connectionString,
+# Heroku-style DATABASE_URL) hand back a plain `postgresql://` URL, which
+# SQLAlchemy defaults to the psycopg2 driver — not installed here, we use
+# psycopg3 (`psycopg[binary]`). Normalizing the scheme is safe and never
+# changes behavior for a URL that already specifies a driver.
+if DATABASE_URL.startswith("postgresql://"):
+    DATABASE_URL = DATABASE_URL.replace("postgresql://", "postgresql+psycopg://", 1)
+elif DATABASE_URL.startswith("postgres://"):
+    DATABASE_URL = DATABASE_URL.replace("postgres://", "postgresql+psycopg://", 1)
+
 connect_args = {"check_same_thread": False} if DATABASE_URL.startswith("sqlite") else {}
 
 engine = create_engine(DATABASE_URL, connect_args=connect_args, pool_pre_ping=True)
